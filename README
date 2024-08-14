@@ -1,0 +1,19 @@
+# Notes app
+
+## Intended for use with Dungeons and Dragons
+
+The intention in the creation of this app is similar to world anvil except from a players perspective. It would allow users to create notes about people, places, things, events. For instance, if you are running a mystery campaign and you needed detailed notes about an NPC over multiple sessions, you could add and update notes and key facts about that NPC.
+
+As of the initial push, the boilerplate back-end code has been set up as has a test, but local testing is giving an error :
+
+```err
+error: role "Jason" does not exist
+```
+
+If you would like to test, you will need to set up a .env file with
+
+```md
+DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<table>
+```
+
+If you still see the error (or any other errors), please feel free to contact me
