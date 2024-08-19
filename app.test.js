@@ -1,12 +1,14 @@
-require('dotenv').config({ })
+require('dotenv').config({ path: './.env' })
 const request = require('supertest');
 const app = require('./backend/app'); // Adjust the path if necessary
 
+
+// process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/notes';
 describe('Notes API', () => {
+    console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
     it('should create a new note', async () => {
         const res = await request(app)
-            console.log(res.statusCode)
         .post('/notes')
         .send({
             noteTitle: 'Test Note',

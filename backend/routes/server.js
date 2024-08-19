@@ -16,6 +16,10 @@ const pool = new Pool({
  * Feature 1: Get a list of all notes
  */
 router.get("/", async (req, res) => {
+    const { id }  = req.params;
+    if (!uuidv4.validate(id)){
+        return res.status(400).json({ error: "Invalid UUID format" });
+    }
     try {
         const result = await pool.query("SELECT * FROM notes");
         res.json(result.rows);
@@ -48,15 +52,15 @@ router.get("/:id", async (req, res) => {
 */
 
 router.post("/", async (req, res) => {    
-    const {noteTitle} = req.body; // change variables once determined
+    const {notetitle} = req.body; // change variables once determined
     const id = uuidv4();
     try {
         await pool.query(
              
-            "INSERT INTO notes (id, noteTitle) VALUES($1, $2)", //add to values when variables have been determined
-            [id, noteTitle]
+            "INSERT INTO notes (id, notetitle) VALUES($1, $2)", //add to values when variables have been determined
+            [id, notetitle]
         );
-        res.status(201).json(id, noteTitle) // add variables when variables have been determined
+        res.status(201).json({ id, notetitle }) // add variables when variables have been determined
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
@@ -69,16 +73,16 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     const { id } = req.params;
-    const { noteTitle } = req.body; // change variables once determined
+    const { notetitle } = req.body; // change variables once determined
     try {
         const result = await pool.query(
-            "UPDATE notes SET noteTitle = $1 WHERE id = $2", //add to values when variables have been determined
-            [noteTitle, id]//
+            "UPDATE notes SET notetitle = $1 WHERE id = $2", //add to values when variables have been determined
+            [notetitle, id]//
         );
         if (result.rowCount === 0) {
             return res.status(404).json({ error: "Note not found" });
         }
-        res.json({ id, noteTitle }); // add variables when variables have been determined
+        res.json({ id, notetitle }); // add variables when variables have been determined
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" })
