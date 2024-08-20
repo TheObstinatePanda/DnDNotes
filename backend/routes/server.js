@@ -1,5 +1,4 @@
 const express = require("express");
-const { v4: uuidv4 } = require("uuid")
 const router = express.Router();
 const { Pool } = require("pg");
 const dotenv = require("dotenv");
@@ -17,8 +16,8 @@ const pool = new Pool({
  */
 router.get("/", async (req, res) => {
     const { id }  = req.params;
-    if (!uuidv4.validate(id)){
-        return res.status(400).json({ error: "Invalid UUID format" });
+    if (Number.isNaN(id / 0)){
+        return res.status(400).json({ error: "Invalid ID format" });
     }
     try {
         const result = await pool.query("SELECT * FROM notes");
@@ -51,16 +50,15 @@ router.get("/:id", async (req, res) => {
  * Feature 3: Adding new notes
 */
 
-router.post("/", async (req, res) => {    
-    const {notetitle} = req.body; // change variables once determined
-    const id = uuidv4();
+router.post("/", async (req, res) => {      
     try {
-        await pool.query(
+        const { notetitle } = req.body; // change variables once determined
+        const result = await pool.query(
              
-            "INSERT INTO notes (id, notetitle) VALUES($1, $2)", //add to values when variables have been determined
-            [id, notetitle]
+            "INSERT INTO notes DEFAULT VALUES RETURNING *" //add to values when variables have been determined
+            // [notetitle]
         );
-        res.status(201).json({ id, notetitle }) // add variables when variables have been determined
+        res.status(201).json({ note: result.rows[0] }) // add variables when variables have been determined
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
@@ -72,9 +70,12 @@ router.post("/", async (req, res) => {
  */
 
 router.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const { notetitle } = req.body; // change variables once determined
+    
     try {
+        console.log(req.params);
+        const { id } = req.params;
+        console.log('id = ' + id)
+        const { notetitle } = req.body; // change variables once determined
         const result = await pool.query(
             "UPDATE notes SET notetitle = $1 WHERE id = $2", //add to values when variables have been determined
             [notetitle, id]//
@@ -94,8 +95,8 @@ router.put("/:id", async (req, res) => {
  */
 
 router.delete("/:id", async (req, res) => {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
         const result = await pool.query("DELETE FROM notes WHERE id = $1", [id]);
         if (result.rowCount === 0) {
             return res.status(404).json({ error: "Notes not found" });

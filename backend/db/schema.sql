@@ -1,6 +1,9 @@
+-- Enable the uuid-ossp extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- create notes table
 CREATE TABLE notes (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(30),
     tag VARCHAR(12),
     note TEXT,
@@ -149,9 +152,9 @@ BEGIN
         INSERT INTO fam (name, fam_id, note_id) VALUES (
             NEW.family,
             (SELECT COALESCE(MAX(fam_id), 0) + 1 FROM fam),    
-            NEW.note_id;
-        )
-    END IF
+            NEW.note_id
+        );
+    END IF;
 
     RETURN NEW;
 END;
@@ -215,12 +218,12 @@ EXECUTE FUNCTION ev_insert_person_or_item_trigger();
 
 -- Create the trigger on the 'person' table
 CREATE TRIGGER pe_add_notes_data_trigger
-AFTER INSERT ON person
+AFTER INSERT ON people
 FOR EACH ROW
 EXECUTE FUNCTION insert_note_trigger();
 
 CREATE TRIGGER insert_family_trigger
-AFTER INSERT ON person
+AFTER INSERT ON people
 FOR EACH ROW
 EXECUTE FUNCTION pe_insert_family_trigger();
 
