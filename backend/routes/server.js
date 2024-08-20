@@ -8,7 +8,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const pool = new Pool({
-    connectString: process.env.DATABASE_URL
+    connectString: process.env.DATABASE_URL,
+    search_path: 'public'
 })
 
 /**
@@ -50,15 +51,17 @@ router.get("/:id", async (req, res) => {
  * Feature 3: Adding new notes
 */
 
-router.post("/", async (req, res) => {      
+router.post("/notes", async (req, res) => {      
     try {
-        const { notetitle } = req.body; // change variables once determined
-        const result = await pool.query(
-             
-            "INSERT INTO notes DEFAULT VALUES RETURNING *" //add to values when variables have been determined
-            // [notetitle]
+        const result = await pool.query(             
+            "INSERT INTO notes DEFAULT VALUES"  
         );
-        res.status(201).json({ note: result.rows[0] }) // add variables when variables have been determined
+        if (result.rows.length > 0){
+            console.log(result.rows)
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create note" });
+        }        
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });

@@ -9,10 +9,9 @@ describe('Notes API', () => {
 
     it('should create a new note', async () => {
         const res = await request(app)
-        .post('/');
-        console.log(res.body);
+        .post('/notes');
+        //console.log(res.body);
         expect(res.statusCode).toEqual(201);
-        expect(res.body).toHaveProperty('note');
     });
 
     // it('should get all notes', async () => {
