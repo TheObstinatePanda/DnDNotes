@@ -20,10 +20,9 @@ pool.connect((err, client, release) => {
 });
 
 /**
- * Feature 1: Get a list of all notes
+ * Feature 1: Get a list of all notes for a given table
  */
 router.get("/notes", async (req, res) => {
-    
     try {
         const result = await pool.query("SELECT * FROM notes");
         res.json(result.rows);
@@ -33,8 +32,19 @@ router.get("/notes", async (req, res) => {
     }
 });
 
+router.get("/people", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM people");
+        res.json(result.rows);
+        //console.log(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
 /**
- * Feature 2: Get specific notes
+ * Feature 2: Get specific notes from a given table
  */
 
 router.get("/notes", async (req, res) => {
@@ -53,16 +63,30 @@ router.get("/notes", async (req, res) => {
     }
 });
 
+router.get("/people", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM people WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Person not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 /**
- * Feature 3: Adding new notes
+ * Feature 3: Adding new notes to a given table
 */
 
-router.post("/notes", async (req, res) => {    
-    // const { title } = req.body; 
+router.post("/notes", async (req, res) => {
     try {
         const result = await pool.query(             
-            "INSERT INTO notes  DEFAULT VALUES  RETURNING *",
-        //    [title]  
+            "INSERT INTO notes DEFAULT VALUES  RETURNING *",
         );
         if (result.rows.length > 0){
             res.status(201).json({ note: result.rows[0] });
@@ -75,12 +99,29 @@ router.post("/notes", async (req, res) => {
     }
 });
 
+router.post("/people", async (req, res) => {
+    const { name, is_npc, family, relations, orgs, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO people (name, is_npc, family, relations, orgs, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [name, is_npc, family, relations, orgs, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create person note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 /**
  * Feature 4: Updating notes
  */
 
 router.put("/notes", async (req, res) => {
-    
     try {
         const { orgtitle, newtitle } = req.body; // change variables once determined
         const result = await pool.query(
@@ -91,6 +132,24 @@ router.put("/notes", async (req, res) => {
             return res.status(404).json({ error: "Note not found" });
         }
         res.json({ title: newtitle }); // add variables when variables have been determined
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.put("/people", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE people SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Person not found" });
+        }
+        res.json({ updatedPerson: result.rows[0] }); 
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" })
@@ -108,7 +167,23 @@ router.delete("/notes", async (req, res) => {
         if (result.rowCount === 0) {
             return res.status(404).json({ error: "Notes not found" });
         };
-        res.status(204).send();
+        res.status(204).json({ message: "Note removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/people", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM people WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Name not found" });
+        }
+        res.status(204).json({ message: "Person removed successfully"});
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });

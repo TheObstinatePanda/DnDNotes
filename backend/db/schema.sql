@@ -19,7 +19,7 @@ CREATE TABLE people (
     relations TEXT[],
     orgs TEXT[],
     note TEXT,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE place (
     orgs TEXT[],
     owned_by VARCHAR(20),
     note text,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE thing (
     owned_by VARCHAR(30),
     description TEXT,
     note TEXT,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE event (
     is_combat BOOLEAN,
     loot TEXT[],
     note TEXT,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE fam (
     relations TEXT[],
     lives_in TEXT,
     note TEXT,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -87,7 +87,7 @@ CREATE TABLE org (
     relations TEXT[],
     found_in TEXT[],
     note TEXT,
-    note_id INT,
+    note_id UUID,
     FOREIGN KEY (note_id) REFERENCES notes(id)
 );
 
@@ -148,12 +148,14 @@ $$ LANGUAGE PLPGSQL;
 CREATE OR REPLACE FUNCTION pe_insert_family_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NOT EXISTS (SELECT name FROM fam WHERE name = NEW.family) THEN
-        INSERT INTO fam (name, fam_id, note_id) VALUES (
-            NEW.family,
-            (SELECT COALESCE(MAX(fam_id), 0) + 1 FROM fam),    
-            NEW.note_id
-        );
+    IF NEW.family IS NOT NULL THEN
+        IF NOT EXISTS (SELECT name FROM fam WHERE name = NEW.family) THEN
+            INSERT INTO fam (name, fam_id, note_id) VALUES (
+                NEW.family,
+                (SELECT COALESCE(MAX(fam_id), 0) + 1 FROM fam),    
+                NEW.note_id
+            );
+        END IF;
     END IF;
 
     RETURN NEW;

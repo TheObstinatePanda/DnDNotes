@@ -2,23 +2,14 @@
 
 ## Intended for use with Dungeons and Dragons
 
-The intention in the creation of this app is similar to world anvil except from a players perspective. It would allow users to create notes about people, places, things, events. For instance, if you are running a mystery campaign and you needed detailed notes about an NPC over multiple sessions, you could add and update notes and key facts about that NPC.
+This app is intended to assist TTRPG to take notes from their charachter's perspective. It allows users to create notes about people, places, things, events, and more. It is currently under development and has limited functionality but has the following functionality:
 
-As of the initial push, the boilerplate back-end code has been set up as has a test, but local testing is giving an error :
+### Adding to the `notes` table
 
-```err
-error: role "Jason" does not exist
-```
+The `notes` table is the head of the database. It generates a unique UUID every time a new note is entered. When a user selects to 'add' a note an entry will be placed into this table with default vaules - an id and a time stamp. It will then wait for other updates to be submitted and the other columns, `title`, `tag`, and `note` will be filled in once data is put into any of the other tables.
 
-If you would like to test, you will need to set up a .env file with
 
-```md
-DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<table>
-```
-
-If you still see the error (or any other errors), please feel free to contact me
-
-## Thinking about the order of operations when the server is being accessed by the website.
+## Order of Operations as a user is creating a new note.
 
 First, user will click on 'Create Note', this will create an entry on the 'notes' table which fills out the id and timestamp.
 
@@ -26,7 +17,7 @@ First, user will click on 'Create Note', this will create an entry on the 'notes
 INSERT INTO notes DEFAULT VALUES;
 ```
 
-The user will then be directed to a page with a dropdown menu to select which type of note they want to create - one option for each of the tables. For instance, and entry into the place table:
+The user will then be directed to a page with a drop down menu to select which type of note they want to create - one option for each of the tables. For instance, an entry into the place table:
 
 ```SQL
 INSERT INTO place (name, location, type, orgs, owned_by, note, note_id) VALUES (
@@ -42,19 +33,35 @@ INSERT INTO place (name, location, type, orgs, owned_by, note, note_id) VALUES (
 
 A user should see these notes in specific sections of the page, have the option to select, read, and edit notes that have previously been added. They should also be able to add notes about specific persons, places, things, etc.
 
-## Trigger thoughts
+## Database Triggers
 
-The `id` from `notes` will be captured for use in the `notes_id` of the chosen table and will be submitted when the user submits their note.
+These triggers are implemented into the [Schema](./backend/db/schema.sql).
 
-Whenever a new note is entered on a table, its `name` is sent to the `notes` table as the value for the `title` column. The table's `id` is sent to the `notes` table setting the `tag` column value to the first two characters of the origin table's name and the id for the post. For instance if the post id is 266 in the `events` table, the `tag` value in `notes` would be `ev266`.
+### Sending Title, Tag, and Note to the notes table
 
-When a note is entered into the `event` table, if the `persons_involved` column includes a name that is not included in the `people` table, create a new note in the `people` table for that person referencing the `note_id` being assigned to the new entry for the `event` table.
+Whenever a new note is entered on a table, its `name` is sent to the `notes` table as the value for the `title` column. The table's `id` is concated with the first two letters of the origin table's sequential id then sent to the `notes` table setting the `tag` column value (e.g. if the post id is 266 in the `events` table, the `tag` value in `notes` would be `ev266`.). The note entered is sent to the `notes` table setting the `note` column value. This id done where the `note_id` of the entry to the origin table matches the `id` from the `notes` table.
 
-When a note is created in the `event` table, if an item being placed in the `loot` column is not in the `thing` table, create a new note in the `thing` table for that item referencing the `notes_id` being assigned to the new entry for the `event` table.
+### Triggering entries on `people` table
 
-When a note is created on the `person` table, if no values in `fam.name` match the `family` provided in the note entry, create a new entry in the `fam` table, referencing the `notes_id` being assigned to the new entry for the `people` table. Also, this new entry being sent to the fam table should increment the fam_id up one to the next highest value.
+When a note is entered into the `event` table, if the `persons_involved` column includes a name that is not included in the `people` table, a new entry is created in the `people` table for that person referencing the `note_id` being assigned to the new entry for the `event` table.
 
-When a note is created in the `fam` table, if one of the people listed in `members` on that post is not anywhere in the `people` table, create a new note in the `people` table for that member of the family referencing the `notes_id` being assigned to the new entry for the `fam` table.
+When a note is created in the `fam` table, if one of the people listed in `members` on that post is not anywhere in the `people` table, create a new note in the `people` table for that member of the family referencing the `note_id` being assigned to the new entry for the `fam` table.
 
 When a note is created in the `org` table, if one of the people listed in `members` on that post is not anywhere in the `people` table, create a new note in the `people` table for that member of the family referencing the `notes_id` being assigned to the new entry for the `org` table.
 
+### Triggering entries on `fam` table
+
+When a note is created on the `person` table, if no values in `fam.name` match the `family` provided in the note entry, create a new entry in the `fam` table, referencing the `note_id` being assigned to the new entry for the `people` table. Also, this new entry being sent to the fam table should increment the fam_id up one to the next highest value.
+
+### Triggering entries on `thing` table
+
+When a note is created in the `event` table, if an item being placed in the `loot` column is not in the `thing` table, create a new note in the `thing` table for that item referencing the `note_id` being assigned to the new entry for the `event` table.
+
+
+## Moving Forward from Here
+
+Routes for other tables must be created and tested.
+
+### People table reqs
+
+The `name` column is required. `is_npc` should default to TRUE if no value is given. Family is not required and should not be entered until the `fam` table is created due to triggers. same goes for relations and orgs. 
