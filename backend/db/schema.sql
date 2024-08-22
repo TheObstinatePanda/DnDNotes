@@ -121,23 +121,27 @@ DECLARE
     item TEXT;
 BEGIN
     -- loop through the `persons_involved` to check if element of `persons_involved` is in the `people` table
-    FOREACH person IN ARRAY NEW.persons_involved
-    LOOP
-        -- check if person is in the people table
-        IF NOT EXISTS (SELECT name FROM people WHERE name = person) THEN
-            -- if not, insert new row for that person  
-            INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
-        END IF;
-    END LOOP;
+    IF array_length(NEW.persons_involved, 1) IS NOT NULL THEN
+        FOREACH person IN ARRAY NEW.persons_involved
+        LOOP
+            -- check if person is in the people table
+            IF NOT EXISTS (SELECT name FROM people WHERE name = person) THEN
+                -- if not, insert new row for that person  
+                INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
+            END IF;
+        END LOOP;
+    END IF;
 
-    FOREACH item IN ARRAY new.loot
-    LOOP
-        -- check if the item is in the thing table
-        IF NOT EXISTS (SELECT name FROM thing WHERE name = item) THEN
-            --if not, insert new row for that item
-            INSERT INTO thing (name, note_id) VALUES (item, NEW.note_id);
-        END IF;
-    END LOOP;
+    IF array_length(NEW.loot, 1) IS NOT NULL THEN
+        FOREACH item IN ARRAY new.loot
+        LOOP
+            -- check if the item is in the thing table
+            IF NOT EXISTS (SELECT name FROM thing WHERE name = item) THEN
+                --if not, insert new row for that item
+                INSERT INTO thing (name, note_id) VALUES (item, NEW.note_id);
+            END IF;
+        END LOOP;
+    END IF;
 
     RETURN NEW;
 END;
@@ -169,15 +173,17 @@ RETURNS TRIGGER AS $$
 DECLARE
     person TEXT;
 BEGIN
-    -- loop through each person in memebers entry
-    FOREACH person IN ARRAY NEW.members
-    LOOP
-        -- check if person is in the people table
-        IF NOT EXISTS ( SELECT name FROM people WHERE name = person) THEN
-            -- if not, insert new row for that person
-            INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
-        END IF;
-    END LOOP;
+    IF array_length(NEW.members, 1) IS NOT NULL THEN
+    -- loop through each person in members entry
+        FOREACH person IN ARRAY NEW.members
+        LOOP
+            -- check if person is in the people table
+            IF NOT EXISTS ( SELECT name FROM people WHERE name = person) THEN
+                -- if not, insert new row for that person
+                INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
+            END IF;
+        END LOOP;
+    END IF;
     
     RETURN NEW;
 END;
@@ -191,15 +197,17 @@ RETURNS TRIGGER AS $$
 DECLARE
     person TEXT;
 BEGIN 
-    -- loop through each person in family_members
-    FOREACH person IN ARRAY NEW.family_members
-    LOOP
-        -- check if person is in the people table
-        IF NOT EXISTS (SELECT name FROM people WHERE name = person) THEN
-            -- if not, insert now row for that person
-            INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
-        END IF;
-    END LOOP;
+    IF array_length(NEW.family_members, 1) IS NOT NULL THEN
+        -- loop through each person in family_members
+        FOREACH person IN ARRAY NEW.family_members
+        LOOP
+            -- check if person is in the people table
+            IF NOT EXISTS (SELECT name FROM people WHERE name = person) THEN
+                -- if not, insert now row for that person
+                INSERT INTO people (name, note_id) VALUES (person, NEW.note_id);
+            END IF;
+        END LOOP;
+    END IF;
 
     RETURN NEW;
 END;
@@ -229,12 +237,23 @@ AFTER INSERT ON people
 FOR EACH ROW
 EXECUTE FUNCTION pe_insert_family_trigger();
 
+-- Create triggers on the 'place' table
+CREATE TRIGGER pl_add_notes_data_trigger
+AFTER INSERT ON place
+FOR EACH ROW
+EXECUTE FUNCTION insert_note_trigger();
+
+-- Create triggers on the 'thing' table
+CREATE TRIGGER th_add_notes_data_trigger
+AFTER INSERT ON thing
+FOR EACH ROW
+EXECUTE FUNCTION insert_note_trigger();
+
 -- Create the trigger on the 'org' table
 CREATE TRIGGER org_add_notes_data_trigger
 AFTER INSERT ON org
 FOR EACH ROW
 EXECUTE FUNCTION insert_note_trigger();
-
 
 CREATE TRIGGER insert_person_org_trigger
 AFTER INSERT ON org

@@ -36,7 +36,56 @@ router.get("/people", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM people");
         res.json(result.rows);
-        //console.log(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.get("/place", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM place");
+        res.json(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.get("/thing", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM thing");
+        res.json(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.get("/fam", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM fam");
+        res.json(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.get("/org", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM org");
+        res.json(result.rows);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.get("/event", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM event");
+        res.json(result.rows);
     } catch(err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" })
@@ -71,6 +120,86 @@ router.get("/people", async (req, res) => {
         );
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Person not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.get("/place", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM place WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Place not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.get("/thing", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM thing WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Thing not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.get("/fam", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM fam WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Family not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.get("/org", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM org WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Organization not found" })
+        }
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.get("/event", async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await pool.query("SELECT * FROM event WHERE name = $1", 
+            [name]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Event not found" })
         }
         res.json(result.rows);
     } catch (err) {
@@ -117,6 +246,96 @@ router.post("/people", async (req, res) => {
     }
 });
 
+router.post("/place", async (req, res) => {
+    const { name, location, type, orgs, owned_by, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO place (name, location, type, orgs, owned_by, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [name, location, type, orgs, owned_by, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create place note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/thing", async (req, res) => {
+    const { name, type, is_magic, owned_by, description, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO thing (name, type, is_magic, owned_by, description, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [name, type, is_magic, owned_by, description, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create thing note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/fam", async (req, res) => {
+    const { name, status, family_members, orgs, relations, lives_in, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO fam (name, status, family_members, orgs, relations, lives_in, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            [name, status, family_members, orgs, relations, lives_in, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create family note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/org", async (req, res) => {
+    const { name, type, members, relations, found_in, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO org (name, type, members, relations, found_in, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [name, type, members, relations, found_in, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create Organization note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/event", async (req, res) => {
+    const { name, persons_involved, location, is_combat, loot, note, note_id } = req.body;
+    try {
+        const result = await pool.query(             
+            "INSERT INTO event (name, persons_involved, location, is_combat, loot, note, note_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [name, persons_involved, location, is_combat, loot, note, note_id]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(500).json({ error: "Failed to create Event note" });
+        }        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 /**
  * Feature 4: Updating notes
  */
@@ -156,6 +375,96 @@ router.put("/people", async (req, res) => {
     }
 });
 
+router.put("/place", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE place SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Place not found" });
+        }
+        res.json({ updatedPlace: result.rows[0] }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.put("/thing", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE thing SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Thing not found" });
+        }
+        res.json({ updatedItem: result.rows[0] }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.put("/fam", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE fam SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Family not found" });
+        }
+        res.json({ updatedFam: result.rows[0] }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.put("/org", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE org SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Organization not found" });
+        }
+        res.json({ updatedOrg: result.rows[0] }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
+router.put("/event", async (req, res) => {
+    try {
+        const { name, tgtcol, newinfo } = req.body; // gather name, target column and new info
+        console.log(req.body);
+        const result = await pool.query(
+            `UPDATE event SET ${tgtcol} = $1 WHERE name = $2 RETURNING *`, // update info in a chosen column of a row selected by its name value
+            [newinfo, name]//
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+        res.json({ updatedOrg: result.rows[0] }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
+});
+
 /**
  * Feature 5: Deleting notes
  */
@@ -184,6 +493,86 @@ router.delete("/people", async (req, res) => {
             return res.status(404).json({ error: "Name not found" });
         }
         res.status(204).json({ message: "Person removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/place", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM place WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Place not found" });
+        }
+        res.status(204).json({ message: "Place removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/thing", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM thing WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Thing not found" });
+        }
+        res.status(204).json({ message: "Thing removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/fam", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM fam WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Family not found" });
+        }
+        res.status(204).json({ message: "Family removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/org", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM org WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Organization not found" });
+        }
+        res.status(204).json({ message: "Organization removed successfully"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.delete("/event", async (req, res) => {
+    try {
+        const { name } = req.query;
+        const result = await pool.query("DELETE FROM event WHERE name = $1",
+            [name]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+        res.status(204).json({ message: "Event removed successfully"});
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
