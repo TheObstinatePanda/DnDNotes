@@ -20,7 +20,41 @@ pool.connect((err, client, release) => {
 });
 
 /**
- * Feature 1: Get a list of all notes for a given table
+ * Feature 1: Get all notes from a given table
+ */
+
+/**
+ * @swagger
+ * /notes:
+ *   get:
+ *       summary: Retrieve a list of all notes
+ *       responses:
+ *          200:
+ *            description: A JSON array note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: string
+ *                              format: uuid
+ *                              example: "dd406570-a196-4739-b602-4d6ef2b09694"
+ *                          title:
+ *                              type: string
+ *                              example: "The Battle of Baldwyn Gorge."
+ *                          tag:
+ *                              type: string
+ *                              example: ev6
+ *                          note:
+ *                              type: text
+ *                              example: "A clash in Baldwin Gorge..."
+ *                          created_at:
+ *                              type: string
+ *                              format: date-time
+ *                              example: "2024-09-04T12:24:00Z"
  */
 router.get("/notes", async (req, res) => {
     try {
@@ -32,6 +66,49 @@ router.get("/notes", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /people:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to people
+ *       responses:
+ *          200:
+ *            description: A JSON array people-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Steve"
+ *                          is_npc:
+ *                              type: boolean
+ *                              example: true
+ *                          family:
+ *                              type: text
+ *                              example: "Portelli"
+ *                          relations:
+ *                              type: array
+ *                              example: ["Brick Caradino", "Daliah Dennaram"]
+ *                          orgs:
+ *                              type: array
+ *                              example: ["The Thieves guild", "The Merchant's guild"]
+ *                          note:
+ *                              type: text
+ *                              example: "Steve is his name."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
 router.get("/people", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM people");
@@ -41,6 +118,50 @@ router.get("/people", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" })
     }
 });
+
+/**
+ * @swagger
+ * /place:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to places
+ *       responses:
+ *          200:
+ *            description: A JSON array place-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "House Atlus"
+ *                          location:
+ *                              type: string
+ *                              example: "Oarus Ghein"
+ *                          type:
+ *                              type: string
+ *                              example: "Great House"
+ *                          orgs:
+ *                              type: array
+ *                              example: ["The Thieves guild", "The Merchant's guild"]
+ *                          owned_by:
+ *                              type: string
+ *                              example: "The Atlus family"
+ *                          note:
+ *                              type: text
+ *                              example: "The Atlus family is the leading house in the oligarchy of Oarus Ghein..."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
 
 router.get("/place", async (req, res) => {
     try {
@@ -52,6 +173,50 @@ router.get("/place", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /thing:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to things
+ *       responses:
+ *          200:
+ *            description: A JSON array thing-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Great Axe of Smashing"
+ *                          type:
+ *                              type: string
+ *                              example: "Great Axe"
+ *                          is_magic:
+ *                              type: boolean
+ *                              example: true
+ *                          owned_by:
+ *                              type: string
+ *                              example: "Deandrey Nhevsky"
+ *                          description:
+ *                              type: text
+ *                              example: "A single bladed axe with with the blade edge portruding from the mouth of a ..."
+ *                          note:
+ *                              type: text
+ *                              example: "Won in a duel against the Martyred fellow's leader."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
 router.get("/thing", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM thing");
@@ -61,6 +226,57 @@ router.get("/thing", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" })
     }
 });
+
+/**
+ * @swagger
+ * /fam:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to families
+ *       responses:
+ *          200:
+ *            description: A JSON array famly-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Atlus"
+ *                          fam_id:
+ *                              type: integer
+ *                              description: An incrementing id that only goes up when a new family name is entered
+ *                              example: "01"
+ *                          status:
+ *                              type: string
+ *                              example: "Ruling Family"
+ *                          family_members:
+ *                              type: array
+ *                              example: ["Genna Atlus", "Nikolai Atlus", "Mikhael Atlus"]
+ *                          orgs:
+ *                              type: array
+ *                              example: ["City Council", "The Ahnk", "The Military Academy"]
+ *                          relations:
+ *                              type: array
+ *                              example: ["Dalton", "Tenia", "..."]
+ *                          lives_in:
+ *                              type: array
+ *                              example: ["Oarus Ghein"]
+ *                          note:
+ *                              type: text
+ *                              example: "The Atlus family was one of the three founding houses of Oarus Ghein."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
 
 router.get("/fam", async (req, res) => {
     try {
@@ -72,6 +288,54 @@ router.get("/fam", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /org:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to organizations
+ *       responses:
+ *          200:
+ *            description: A JSON array org-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "The Ahnk"
+ *                          org_id:
+ *                              type: integer
+ *                              description: An incrementing id that only goes up when a new org name is entered
+ *                              example: "01"
+ *                          type:
+ *                              type: string
+ *                              example: "Mage's Academy"
+ *                          members:
+ *                              type: array
+ *                              example: ["Thomas Tunbrey","Chezex Diroley", "..."]
+ *                          relations:
+ *                              type: array
+ *                              example: ["Military Academy", "Alchemy Guild", "..."]
+ *                          found_in:
+ *                              type: array
+ *                              example: ["Oarus Ghein", "Oarus Khadi", "..."]
+ *                          note:
+ *                              type: text
+ *                              example: "The Ahnk is a place of 'higher' education."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
 router.get("/org", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM org");
@@ -81,6 +345,50 @@ router.get("/org", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" })
     }
 });
+
+/**
+ * @swagger
+ * /event:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to events
+ *       responses:
+ *          200:
+ *            description: A JSON array event-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Brawl at the Brewmaster's Ball"
+ *                          persons_involved:
+ *                              type: array
+ *                              example: ["Deandrey Atlus", "Dalton", "Piotre Pointe"]
+ *                          location:
+ *                              type: string
+ *                              example: "House Atlus, Hall H"
+ *                          is_combat:
+ *                              type: boolean
+ *                              example: false
+ *                          loot:
+ *                              type: array
+ *                              example: [null]
+ *                          note:
+ *                              type: text
+ *                              example: "A minor scuffle at the Brewmaster's Ball"
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
 
 router.get("/event", async (req, res) => {
     try {
@@ -96,8 +404,49 @@ router.get("/event", async (req, res) => {
  * Feature 2: Get specific notes from a given table
  */
 
-router.get("/notes", async (req, res) => {
-    const { title } = req.params;
+/**
+ * @swagger
+ * /notes/title:
+ *   get:
+ *     summary: Retrieve a list of all notes by title
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The title being searched for in notes
+ *     responses:
+ *       200:
+ *         description: A JSON array of note objects filtered by title
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: 
+ *                     type: string
+ *                     format: uuid
+ *                     example: "dd406570-a196-4739-b602-4d6ef2b09694"
+ *                   title:
+ *                     type: string
+ *                     example: "The Battle of Baldwyn Gorge."
+ *                   tag:
+ *                     type: string
+ *                     example: "ev6"
+ *                   note:
+ *                     type: string
+ *                     example: "A clash in Baldwin Gorge..."
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-04T12:24:00Z"
+ */
+
+router.get("/notes/title", async (req, res) => {
+    const { title } = req.query;
     try {
         const result = await pool.query("SELECT * FROM notes where title = $1", 
             [title]
@@ -112,7 +461,58 @@ router.get("/notes", async (req, res) => {
     }
 });
 
-router.get("/people", async (req, res) => {
+/**
+ * @swagger
+ * /people/name:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to people specifically from the people table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in people
+ *       responses:
+ *          200:
+ *            description: A JSON array people-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Steve"
+ *                          is_npc:
+ *                              type: boolean
+ *                              example: true
+ *                          family:
+ *                              type: text
+ *                              example: "Portelli"
+ *                          relations:
+ *                              type: array
+ *                              example: ["Brick Caradino", "Daliah Dennaram"]
+ *                          orgs:
+ *                              type: array
+ *                              example: ["The Thieves guild", "The Merchant's guild"]
+ *                          note:
+ *                              type: text
+ *                              example: "Steve is his name."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/people/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM people WHERE name = $1", 
@@ -128,7 +528,58 @@ router.get("/people", async (req, res) => {
     }
 });
 
-router.get("/place", async (req, res) => {
+/**
+ * @swagger
+ * /place/name:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to places specifically from the place table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in place
+ *       responses:
+ *          200:
+ *            description: A JSON array place-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "House Atlus"
+ *                          location:
+ *                              type: string
+ *                              example: "Oarus Ghein"
+ *                          type:
+ *                              type: string
+ *                              example: "Great House"
+ *                          orgs:
+ *                              type: array
+ *                              example: ["The Thieves guild", "The Merchant's guild"]
+ *                          owned_by:
+ *                              type: string
+ *                              example: "The Atlus family"
+ *                          note:
+ *                              type: text
+ *                              example: "The Atlus family is the leading house in the oligarchy of Oarus Ghein..."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/place/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM place WHERE name = $1", 
@@ -144,7 +595,58 @@ router.get("/place", async (req, res) => {
     }
 });
 
-router.get("/thing", async (req, res) => {
+/**
+ * @swagger
+ * /thing/name:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to things specifically from the thing table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in thing
+ *       responses:
+ *          200:
+ *            description: A JSON array thing-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Great Axe of Smashing"
+ *                          type:
+ *                              type: string
+ *                              example: "Great Axe"
+ *                          is_magic:
+ *                              type: boolean
+ *                              example: true
+ *                          owned_by:
+ *                              type: string
+ *                              example: "Deandrey Nhevsky"
+ *                          description:
+ *                              type: text
+ *                              example: "A single bladed axe with with the blade edge portruding from the mouth of a ..."
+ *                          note:
+ *                              type: text
+ *                              example: "Won in a duel against the Martyred fellow's leader."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/thing/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM thing WHERE name = $1", 
@@ -160,7 +662,65 @@ router.get("/thing", async (req, res) => {
     }
 });
 
-router.get("/fam", async (req, res) => {
+/**
+ * @swagger
+ * /fam/name:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to families specifically from the fam table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in fam
+ *       responses:
+ *          200:
+ *            description: A JSON array famly-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Atlus"
+ *                          fam_id:
+ *                              type: integer
+ *                              description: An incrementing id that only goes up when a new family name is entered
+ *                              example: "01"
+ *                          status:
+ *                              type: string
+ *                              example: "Ruling Family"
+ *                          family_members:
+ *                              type: array
+ *                              example: ["Genna Atlus", "Nikolai Atlus", "Mikhael Atlus"]
+ *                          orgs:
+ *                              type: array
+ *                              example: ["City Council", "The Ahnk", "The Military Academy"]
+ *                          relations:
+ *                              type: array
+ *                              example: ["Dalton", "Tenia", "..."]
+ *                          lives_in:
+ *                              type: array
+ *                              example: ["Oarus Ghein"]
+ *                          note:
+ *                              type: text
+ *                              example: "The Atlus family was one of the three founding houses of Oarus Ghein."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/fam/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM fam WHERE name = $1", 
@@ -176,7 +736,62 @@ router.get("/fam", async (req, res) => {
     }
 });
 
-router.get("/org", async (req, res) => {
+/**
+ * @swagger
+ * /org/name:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to organizations specifically from the org table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in org
+ *       responses:
+ *          200:
+ *            description: A JSON array org-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "The Ahnk"
+ *                          org_id:
+ *                              type: integer
+ *                              description: An incrementing id that only goes up when a new org name is entered
+ *                              example: "01"
+ *                          type:
+ *                              type: string
+ *                              example: "Mage's Academy"
+ *                          members:
+ *                              type: array
+ *                              example: ["Thomas Tunbrey","Chezex Diroley", "..."]
+ *                          relations:
+ *                              type: array
+ *                              example: ["Military Academy", "Alchemy Guild", "..."]
+ *                          found_in:
+ *                              type: array
+ *                              example: ["Oarus Ghein", "Oarus Khadi", "..."]
+ *                          note:
+ *                              type: text
+ *                              example: "The Ahnk is a place of 'higher' education."
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/org/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM org WHERE name = $1", 
@@ -192,7 +807,58 @@ router.get("/org", async (req, res) => {
     }
 });
 
-router.get("/event", async (req, res) => {
+/**
+ * @swagger
+ * /event:
+ *   get:
+ *       summary: Retrieve a list of all notes specific to events specifically from the event table
+ *       parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name being searched for in org
+ *       responses:
+ *          200:
+ *            description: A JSON array event-note objects
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                          id: 
+ *                              type: integer
+ *                              format: int64
+ *                              example: 16
+ *                          name:
+ *                              type: string
+ *                              example: "Brawl at the Brewmaster's Ball"
+ *                          persons_involved:
+ *                              type: array
+ *                              example: ["Deandrey Atlus", "Dalton", "Piotre Pointe"]
+ *                          location:
+ *                              type: string
+ *                              example: "House Atlus, Hall H"
+ *                          is_combat:
+ *                              type: boolean
+ *                              example: false
+ *                          loot:
+ *                              type: array
+ *                              example: [null]
+ *                          note:
+ *                              type: text
+ *                              example: "A minor scuffle at the Brewmaster's Ball"
+ *                          note_id:
+ *                              type: string
+ *                              format: uuid
+ *                              description: Foreign key referencing the id column in the notes table
+ *                              example: "e79ec2de-c31f-4880-9917-29b8899538fc"
+ */
+
+router.get("/event/name", async (req, res) => {
     const { name } = req.query;
     try {
         const result = await pool.query("SELECT * FROM event WHERE name = $1", 
@@ -211,6 +877,25 @@ router.get("/event", async (req, res) => {
 /**
  * Feature 3: Adding new notes to a given table
 */
+
+router.post("/notes", async (req, res) => {
+    const { title, content } = req.body;
+    try {
+        const result = await pool.query(
+            "INSERT INTO notes (title, content) VALUES ($1, $2) RETURNING *",
+            [title, content]
+        );
+        if (result.rows.length > 0){
+            res.status(201).json({ note: result.rows[0] });
+        } else {
+            res.status(400).json({ error: "Failed to create note" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 
 router.post("/notes", async (req, res) => {
     try {
