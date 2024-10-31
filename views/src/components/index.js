@@ -1,0 +1,10 @@
+export { default as Home } from './Home';
+export { default as NavLinks } from './NavLinks';
+export { default as NewNote } from './NewNote'
+export { default as AllNotes } from './AllNotes';
+export { default as Events } from './Events';
+export { default as People } from './People';
+export { default as Places } from './Places'
+export { default as Things } from './Things';
+export { default as Families } from './Families';
+export { default as Organizations } from './Organizations';

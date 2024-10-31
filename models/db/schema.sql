@@ -40,7 +40,7 @@ CREATE TABLE place (
 CREATE TABLE thing (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
-    type VARCHAR(20) NOT NULL,
+    type VARCHAR(20) NOT NULL, -- either remove NOT NULL or have triggers that create entries on things also pull the type of the thing being added
     is_magic BOOLEAN,
     owned_by VARCHAR(30),
     description TEXT,

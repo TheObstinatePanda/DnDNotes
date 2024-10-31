@@ -40,7 +40,7 @@ You will then need to set up the database of your choosing - the schema was writ
 
 3. This will add the database as named - make a note of the name you gave the table, it will be needed in a later step. Now, it is time to load the schema. You have a few options. 
    - You can copy paste the content from `sechma.sql` into the `Query` tab (make sure your database is showing in the `'Select Database'` drop down). 
-   - You can import the `schema.sql` from the File menu (or use Ctrl + O), navigate to the file path `.(your file path).\notes_app\backend\db\` and select the `schema.sql` file. Make sure the Database shows correctly, then click the `Import File` button to import the schema.
+   - You can import the `schema.sql` from the File menu (or use Ctrl + O), navigate to the file path `.(your file path).\notes_app\models\db\` and select the `schema.sql` file. Make sure the Database shows correctly, then click the `Import File` button to import the schema.
 4. With the schema set up, come back into your code editor and make a `.env` file in the root folder of the directory
 5. Inside `.env`you are going to set up the route which will be used for the app to communicate with the database. First, declare `DATABASE_URL` set to equal the `protocol://username:password@host:port/databasename`. See the example below:
 ```
@@ -111,7 +111,7 @@ A user should see these notes in specific sections of the page, have the option 
 
 ## Database Triggers
 
-These triggers are implemented into the [Schema](./backend/db/schema.sql).
+These triggers are implemented into the [Schema](./models/db/schema.sql).
 
 ### Sending Title, Tag, and Note to the notes table
 

@@ -1,0 +1,163 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  pointer-events: none;
+  flex-shrink: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+#hleft, #hcent, #hright {
+  height:10vh;
+}
+
+#hleft {
+  border: 1px solid red;
+  flex: 0 0 15%;
+}
+
+#bcont {
+  background-color: #282c34;
+  height: 80vh;
+  display: flex;
+  flex-direction: row;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  border: 1px solid rgb(0, 255, 204);
+}
+
+#bleft, #bcent, #bright {
+  height: 75vh;
+}
+
+#bleft {
+  border: 1px solid red;
+  flex: 0 0 15%;
+}
+
+#hcent, #bcent {
+  border: solid green 1px;
+  flex: 1 1 auto;
+  max-width: 145.4vh;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+#htitle {
+  width: 80%;
+  border: solid white 1px;
+}
+
+#hright, #bright{
+  display: flex;
+  border: 1px solid blue;
+  flex: 0 0 15%;
+  justify-content: right;
+  align-items: right;
+}
+
+#user-profile{
+  width:5rem;
+  height:5rem;
+  border: 1px solid pink;
+  border-radius: 50%;
+  align-self: center;
+  margin-right: 3.5rem;
+}
+
+#btitle {
+  border: solid 1px blue;
+  width: 50vw;
+  margin-bottom: 10px;
+}
+
+#bcontent {
+  border: solid 1px blue;
+  width: 50vw;
+  height: 62.25vh;
+  margin-top: 10px;
+  text-align: justify;
+  font-size: 1rem;
+  overflow-y: scroll;
+  scrollbar-width:none;
+}
+
+#bcontent::-webkit-scrollbar {
+  display: none;
+}
+
+.topComp {
+  border: 1px solid pink;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  align-self: center;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.ntitle {
+  margin: 0 auto;
+  height: 10%;
+  width: 100%;
+  border: solid pink 1px;
+}
+.ncontent{
+  height: 90%;
+  font-size: .85rem;
+}
+
+.note {
+  border: solid .5px gray;
+}
+
+#btitle, #bcontent{
+  margin: 0 auto;
+}
+
+.Nav-links {
+  font-size: 1.05rem;
+  text-align: left;
+  list-style: none;
+  padding-left: 20%;
+  padding-top: 5%;
+}
+
+li {
+  padding-bottom: 5px;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

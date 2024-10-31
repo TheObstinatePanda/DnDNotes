@@ -1,2 +1,4 @@
-# Environment Variables
 .env
+.env.frontend
+
+node_modules
