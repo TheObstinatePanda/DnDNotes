@@ -18,9 +18,9 @@ export {
 
 export const formConfigMap = {
     event: eventFormConfig,
-    family: famFormConfig,
-    organization: orgFormConfig,
-    person: peopleFormConfig,
+    fam: famFormConfig,
+    org: orgFormConfig,
+    people: peopleFormConfig,
     place: placeFormConfig,
     thing: thingFormConfig
 };

@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MultiInput from './MultiInput';
 
 function DynamicForm({ config = { fields: [] }, onSubmit }) {
     const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+        // Clear form data when config changes
+        setFormData({});
+    }, [config]);
 
     const handleChange = (e) => { 
         const { name, type, checked, value } = e.target;
@@ -13,7 +18,6 @@ function DynamicForm({ config = { fields: [] }, onSubmit }) {
         });
     };
 
-    //need to have multi inputs send back an array in curly brackets "{ }"
     const handleMultiChange = (name, values) => {
         setFormData({
             ...formData,
@@ -25,11 +29,13 @@ function DynamicForm({ config = { fields: [] }, onSubmit }) {
         e.preventDefault();
         console.log('Submitting form data: ', formData)
         onSubmit(formData);
+        // Clear form after submission
+        setFormData({});
     };
 
 return (
     <form onSubmit={handleSubmit}>
-        {config.fields.map((field) => (
+        {config.fields && config.fields.map((field) => (
             <div key={field.name}>
                 {field.type === 'multi' ? (
                     <MultiInput

@@ -10,7 +10,7 @@ These instructions give a brief overview of the technologies used to develop thi
 
 ## Installing
 
-I using Node and Node Package Manager(NPM) for all my projects so this installation guide goes over NPM methods for installation. If you use another package managment tool, please consult their documentation.
+I use Node and Node Package Manager(NPM) for all my projects so, this installation guide goes over NPM methods for installation. If you use another package managment tool, please consult their documentation.
 
 First, create a new directory and clone the repository into it:
 
@@ -18,17 +18,37 @@ First, create a new directory and clone the repository into it:
 git clone https://github.com/TheObstinatePanda/DnDNotes.git
 ```
 
-Install the dependant modules by running:
+You will need to install dependancies for the front end and the back end separately. Once in the root directory for the backend and once in the views directory for the front-end components. It is recommended to install the front-end first. To do this navigate your terminal  to the views directory and run:
 
 ```bash
 npm install
 ```
+This should install: 
+- `@testing-library/jest-dom`
+- `@testing-library/react`
+- `@testing-library/user-event`
+- `react`
+- `react-dom`
+- `react-scripts`
+- `web-vitals`
 
-This should install `dotenv`, `express`, `morgan`, `pg`, `debug`, `jest`, and `supertest` modules.
+Once finished, in a separate terminal run the install command again from the root folder. This should install:
+- `dotenv`
+- `express`
+- `morgan`
+- `pg`
+- `debug`
+- `jest`
+- `supertest`
 
 Note - `dotenv`, `express`, `morgan`, `pg`, and `debug` are currently separated in package.json from `jest` and `supertest`. The are in `"dependencies"` and `"devDependencies"` respectively.
 
-You will then need to set up the database of your choosing - the schema was written with `postgres` in mind as the database. If you are using any other database management make sure the queries set in the `schema.sql` file will work for that database. For the sake of creating this database, I used [Postbird](https://github.com/Paxa/postbird). Below are the steps to create the database using Postbird. If you need to install Postbird, check out the documentation on Codecademy = [https://www.codecademy.com/article/installing-and-using-postgresql-locally](https://www.codecademy.com/article/installing-and-using-postgresql-locally)
+
+## Setting up the database
+
+You will then need to set up the database of your choosing - the schema was written with `postgres` in mind as the database. If you are using any other database management make sure the queries set in the `schema.sql` file will work for that database. For the sake of creating this database, I used [Postbird](https://github.com/Paxa/postbird).
+
+Below are the steps to create the database using Postbird. If you need to install Postbird, check out the documentation on Codecademy = [https://www.codecademy.com/article/installing-and-using-postgresql-locally](https://www.codecademy.com/article/installing-and-using-postgresql-locally)
 
 1. Once you are signed into Postbird, you should see a screen like below. Clicking the green circle with the `+` at the bottom right will open a prompt for creating a new database:
 
@@ -42,16 +62,20 @@ You will then need to set up the database of your choosing - the schema was writ
    - You can copy paste the content from `sechma.sql` into the `Query` tab (make sure your database is showing in the `'Select Database'` drop down). 
    - You can import the `schema.sql` from the File menu (or use Ctrl + O), navigate to the file path `.(your file path).\notes_app\models\db\` and select the `schema.sql` file. Make sure the Database shows correctly, then click the `Import File` button to import the schema.
 4. With the schema set up, come back into your code editor and make a `.env` file in the root folder of the directory
-5. Inside `.env`you are going to set up the route which will be used for the app to communicate with the database. First, declare `DATABASE_URL` set to equal the `protocol://username:password@host:port/databasename`. See the example below:
+5. Inside `.env`you are going to set up the route which will be used for the app to communicate with the database. First, declare `DATABASE_URL` set to equal the `protocol://username:password@host:port/databasename`. You will also use this `.env` to set up the ports for the front and back-ends of the app. See the example below:
 ```
+DB_APP_PORT=8000
+REACT_APP_PORT=8080
+
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/notes
 ```
+It is important that you define the `DB_APP_PORT` and `REACT_APP_PORT` to avoid conflicts with apps using other ports.
 
-From there, you should move on to testing.
+From there, you should move on to testing the back-end.
 
-## Testing
+## Back-End Testing
 
-We are currently set up to run basic tests with jest. Take some time to familiarize yourself with the tests contained in `app.test.js` before running tests. Most of the tests we've employed are commented out so we can focus on one table at a time.
+We are currently set up to run basic tests with jest. Take some time to familiarize yourself with the tests contained in `app.test.js` before running tests. The tests we've employed are commented out so we can focus on one table at a time.
 
 To run any of the tests, make sure the tests you intend to run are un-commented (Ctrl + / in VS code) before runing NPM TEST in your terminal. Review the results in the terminal.
 
@@ -59,7 +83,38 @@ To run any of the tests, make sure the tests you intend to run are un-commented 
 
 ## Deployment
 
-This app is still under development and does not have a build yet for deployment.
+This app is still in early development. As such it should not be judged as a finished app. It is not really ready for being published but I would consider this deployment as an early alpha deployment.
+
+If all has gone smoothly you should be able to start the back-end then front-end for testing. You will need two terminals open. In one, navigate to the `views` directory, the other should stay in the root directory of the project.
+
+Starting with the root directory terminal, run:
+
+```bash
+npm start
+```
+
+This should give you a message like this:
+
+```bash
+> notes_app@1.0.0 start
+> node server.js
+Server is listening on port 8000
+Database connected successfully!
+```
+
+Once the back-end is running, switch to the terminal which has been routed to the `views` directory. There you will run `npm start` once more and should recieve a message like this:
+
+```bash
+You can now view notes-app in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.1.168:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+```
 
 ## Built With
 
@@ -78,40 +133,11 @@ This app was built with JavaScipt and SQL. This list of libraries and tools is n
 
 ## Usage
 
-Below are placeholders for future implementation
-
-### Adding to the `notes` table
-
-The `notes` table is the head of the database. It generates a unique UUID every time a new note is entered. When a user selects to 'add' a note an entry will be placed into this table with default vaules - an id and a time stamp. It will then wait for other updates to be submitted and the other columns, `title`, `tag`, and `note` will be filled in once data is put into any of the other tables.
-
-
-### Order of Operations as a user is creating a new note.
-
-First, user will click on 'Create Note', this will create an entry on the 'notes' table which fills out the id and timestamp.
-
-```sql
-INSERT INTO notes DEFAULT VALUES;
-```
-
-The user will then be directed to a page with a drop down menu to select which type of note they want to create - one option for each of the tables. For instance, an entry into the place table:
-
-```SQL
-INSERT INTO place (name, location, type, orgs, owned_by, note, note_id) VALUES (
-	'The Salty Dog',
-	'10 Emiser St, Demedan',
-	'Tavern',
-	'[hunter's lodge', 'thieves guild'],
-	'Marlin MacDougal',
-	'A note about the Salty Dog',
-	< key captured when the DEFAULT VALUES were entered into notes in the previous step >
-)
-```
-
-A user should see these notes in specific sections of the page, have the option to select, read, and edit notes that have previously been added. They should also be able to add notes about specific persons, places, things, etc.
+Feel free to use this app in this state to keep track of any notes you may like. As it is in an early state, please report any errors or issues you may find.
 
 ## Database Triggers
 
-These triggers are implemented into the [Schema](./models/db/schema.sql).
+These triggers are implemented into the [Schema](./models/db/schema.sql). They may not all play nice during testing - this functionality is still being developed.
 
 ### Sending Title, Tag, and Note to the notes table
 
@@ -139,7 +165,15 @@ The `name` column is required. `is_npc` should default to TRUE if no value is gi
 
 ## Contributing
 
+## Contributing
+
+If you would like to contribute to this project, I welcome your contributions! Please feel free to reach out to me through GitHub for any questions, suggestions, or to discuss potential contributions. You can contact me via my GitHub profile: [The Obstinate Panda](https://github.com/TheObstinatePanda).
+
+Thank you for your interest in contributing to this project!
+
 ## Versioning
+
+notes-app v0.0.1
 
 ## Authors
 
@@ -147,6 +181,22 @@ The `name` column is required. `is_npc` should default to TRUE if no value is gi
 
 ## License
 
-## Acknowledgements
+`MIT License`
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

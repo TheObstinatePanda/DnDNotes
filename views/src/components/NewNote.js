@@ -55,9 +55,9 @@ function NewNote() {
             <select onChange={handleDropChange}>
                 <option value="">Select Note Type</option>
                 <option value="event">Event</option>
-                <option value="family">Family</option>
-                <option value="organization">Organization</option>
-                <option value="person">Person</option>
+                <option value="fam">Family</option>
+                <option value="org">Organization</option>
+                <option value="people">Person</option>
                 <option value="place">Place</option>
                 <option value="thing">Thing</option>
             </select>

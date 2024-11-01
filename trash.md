@@ -522,73 +522,69 @@ By following these steps, you can create a component that maps all notes to indi
 
 
 ```js
-import React, { useState } from 'react';
-import DynamicForm from './dynamicForm/DynamicForm';
-import { formConfigMap } from './dynamicForm';
+import React, { useState, useEffect } from 'react';
+import MultiInput from './MultiInput';
 
-function NewNote() {
-    const [selectedConfig, setSelectedConfig] = useState({ fields: [] });
-    const [selectedTable, setSelectedTable] = useState('');
+function DynamicForm({ config = { fields: [] }, onSubmit }) {
+    const [formData, setFormData] = useState({});
 
-    const handleDropChange = (event) => {
-        const selectedValue = event.target.value;
-        const newConfig = formConfigMap[selectedValue] || {};
-        setSelectedConfig(newConfig);
-        setSelectedTable(selectedValue);
+    useEffect(() => {
+        // Clear form data when config changes
+        setFormData({});
+    }, [config]);
+
+    const handleChange = (e) => { 
+        const { name, type, checked, value } = e.target;
+        const fieldValue = type === 'checkbox' ? checked : value;
+        setFormData({
+            ...formData,
+            [name]: fieldValue,
+        });
     };
 
-    const handleSubmit = (formData) => {
-        console.log('Selected table: ', selectedTable);
-        console.log('Form data', formData);
-
-        // Format multi type fields as PostgreSQL array literals
-        const formattedData = { ...formData };
-        selectedConfig.fields.forEach(field => {
-            if (field.type === 'multi' && Array.isArray(formattedData[field.name])) {
-                formattedData[field.name] = `{${formattedData[field.name].map(item => `"${item.replace(/"/g, '\\"')}"`).join(',')}}`;
-            }
+    const handleMultiChange = (name, values) => {
+        setFormData({
+            ...formData,
+            [name]: values || [],
         });
+    };
 
-        console.log('Formatted data', formattedData);
-
-        fetch(`/api/${selectedTable}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formattedData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            setSelectedConfig({ fields: [] });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Submitting form data: ', formData);
+        onSubmit(formData);
+        // Clear form after submission
+        setFormData({});
     };
 
     return (
-        <div>
-            <h2>New Note</h2>
-            <select onChange={handleDropChange}>
-                <option value="">Select Note Type</option>
-                <option value="event">Event</option>
-                <option value="family">Family</option>
-                <option value="organization">Organization</option>
-                <option value="person">Person</option>
-                <option value="place">Place</option>
-                <option value="thing">Thing</option>
-            </select>
-            <DynamicForm config={selectedConfig} onSubmit={handleSubmit} />
-        </div>
+        <form onSubmit={handleSubmit}>
+            {config.fields && config.fields.map((field) => (
+                <div key={field.name}>
+                    {field.type === 'multi' ? (
+                        <MultiInput
+                            name={field.name}
+                            label={field.label}
+                            values={formData[field.name]}
+                            onChange={handleMultiChange}
+                        />
+                    ) : (
+                        <>
+                            <label>{field.label}</label>
+                            <input
+                                type={field.type}
+                                name={field.name}
+                                value={formData[field.name] || ''}
+                                onChange={handleChange}
+                            />
+                        </>
+                    )}
+                </div>
+            ))}
+            <button type="submit">Submit</button>
+        </form>
     );
 }
 
-export default NewNote;
+export default DynamicForm;
 ```
